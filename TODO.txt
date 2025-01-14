@@ -1,0 +1,3 @@
+- Bulk upload form - upload image, name, tagline, generate description with AI
+- Customers, customer segments, AI customer segment descriptions
+- 

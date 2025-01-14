@@ -1,0 +1,52 @@
+CREATE TABLE products (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  tagline VARCHAR(255),
+  description TEXT,
+  sku VARCHAR(50) UNIQUE NOT NULL,
+  price DECIMAL(10, 2) NOT NULL,
+  image_url TEXT,
+  updated_at TIMESTAMP NOT NULL,
+  updated_by VARCHAR(255) NOT NULL,
+  metadata JSONB
+);
+
+CREATE TABLE categories (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  slug VARCHAR(255) UNIQUE NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+ALTER table products ADD category_id INTEGER;
+
+ALTER TABLE products
+ADD CONSTRAINT fk_category
+FOREIGN KEY (category_id)
+REFERENCES categories(id);
+
+CREATE TABLE customers (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  email VARCHAR(255) UNIQUE NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE customer_segments (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  slug VARCHAR(255) UNIQUE NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE customer_segment_assignments (
+  customer_id INTEGER NOT NULL,
+  segment_id INTEGER NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (customer_id, segment_id),
+  FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE CASCADE,
+  FOREIGN KEY (segment_id) REFERENCES customer_segments(id) ON DELETE CASCADE
+);
