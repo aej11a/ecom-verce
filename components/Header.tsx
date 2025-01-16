@@ -11,7 +11,7 @@ import {
 import { getCategories } from "@/app/actions/category";
 import { getSignedInUser } from "@/app/actions/auth";
 import { SignOutButton } from "./SignOutButton";
-import { CartCount } from './CartCount'
+import { CartCount } from "./CartCount";
 
 export async function Header() {
   const categories = await getCategories();
@@ -69,9 +69,7 @@ export async function Header() {
                   <DropdownMenuItem>
                     <span className="block text-sm">{user.email}</span>
                   </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <SignOutButton />
-                  </DropdownMenuItem>
+                  <SignOutButton />
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
