@@ -2,6 +2,7 @@ import { neon } from "@neondatabase/serverless";
 import Link from "next/link";
 import { ProductList } from "@/components/admin/ProductList";
 import { Button } from "@/components/ui/button";
+import { Product } from "@/types";
 
 async function getProducts() {
   const sql = neon(process.env.DATABASE_URL);
@@ -10,7 +11,7 @@ async function getProducts() {
     FROM products
     ORDER BY updated_at DESC
   `;
-  return rows;
+  return rows as Product[];
 }
 
 export default async function ProductsPage() {

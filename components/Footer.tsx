@@ -9,7 +9,7 @@ export function Footer() {
           <div>
             <h3 className="text-lg font-semibold mb-4">About Us</h3>
             <p className="text-gray-600">
-              Glass & Co. is your one-stop shop for all your needs. We offer a
+              Glass & Co. is your one-stop shop for all your glassware needs. We offer a
               wide range of high-quality products at competitive prices.
             </p>
           </div>

@@ -1,7 +1,6 @@
 import { Suspense } from "react";
 import { neon } from "@neondatabase/serverless";
 import { notFound } from "next/navigation";
-import CategoryDetails from "@/components/CategoryDetails";
 import FilterSidebar from "@/components/FilterSidebar";
 import { ProductGrid } from "@/components/ProductGrid";
 
@@ -25,8 +24,8 @@ export default async function CategoryPage({
   params,
   searchParams,
 }: {
-  params: { slug: string };
-  searchParams: FilterParams;
+  params: Promise<{ slug: string }>;
+  searchParams: Promise<FilterParams>;
 }) {
   const category = await getCategory((await params).slug);
   

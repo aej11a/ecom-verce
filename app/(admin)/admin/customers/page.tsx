@@ -1,8 +1,6 @@
-import { sql } from "@/lib/db";
 import Link from "next/link";
 import { CustomerList } from "@/components/admin/CustomerList";
 import { Button } from "@/components/ui/button";
-import type { Customer } from "@/types";
 import { getCustomers } from "@/app/actions/customer";
 
 export default async function CustomersPage() {

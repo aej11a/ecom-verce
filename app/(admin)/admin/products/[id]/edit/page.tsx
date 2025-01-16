@@ -33,7 +33,7 @@ async function getCustomerSegments() {
 export default async function EditProductPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
   const [product, categories, segments] = await Promise.all([
     getProduct((await params).id),

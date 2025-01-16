@@ -2,6 +2,7 @@ import { sql } from "@/lib/db";
 import Link from "next/link";
 import { CustomerSegmentList } from "@/components/admin/CustomerSegmentList";
 import { Button } from "@/components/ui/button";
+import { CustomerSegment } from "@/types";
 
 async function getCustomerSegments() {
   const rows = await sql`
@@ -9,7 +10,7 @@ async function getCustomerSegments() {
     FROM customer_segments
     ORDER BY name ASC
   `;
-  return rows;
+  return rows as CustomerSegment[];
 }
 
 export default async function CustomerSegmentsPage() {

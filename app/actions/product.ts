@@ -34,7 +34,6 @@ export async function createProduct(formData: FormData) {
 
 export async function updateProduct(id: number, formData: FormData) {
   const name = formData.get("name") as string;
-  const slug = formData.get("slug") as string;
   const tagline = formData.get("tagline") as string;
   const description = formData.get("description") as string;
   const sku = formData.get("sku") as string;
@@ -180,6 +179,16 @@ export async function generatePersonalizedDescription(
   revalidatePath(`/admin/products/${productId}`);
 
   return text;
+}
+
+export async function getProduct(id: number) {
+  const [product] = await sql`
+    SELECT id, name, tagline, description, sku, price, image_url
+    FROM products
+    WHERE id = ${id}
+  `;
+
+  return product;
 }
 
 export async function getProductWithPersonalizedDescription(

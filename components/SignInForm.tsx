@@ -23,7 +23,8 @@ export default function SignInForm() {
       } else {
         setError(result.error || "An error occurred during sign in.");
       }
-    } catch (error) {
+    } catch (e) {
+      console.log(e)
       setError("An unexpected error occurred.");
     }
   };

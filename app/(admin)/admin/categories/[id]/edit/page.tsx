@@ -15,9 +15,9 @@ async function getCategory(id: string): Promise<Category | null> {
 export default async function EditCategoryPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
-  const category = await getCategory(params.id);
+  const category = await getCategory((await params).id);
 
   if (!category) {
     notFound();

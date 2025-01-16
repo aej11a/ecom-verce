@@ -1,13 +1,15 @@
 import { sql } from "@/lib/db";
 import { notFound } from "next/navigation";
 import ProductDetails from "@/components/ProductDetails";
-import { getProductWithPersonalizedDescription } from "@/app/actions/product";
-import { getSignedInUser } from "@/app/actions/auth";
+import { getProduct } from "@/app/actions/product";
+// import { getSignedInUser } from "@/app/actions/auth";
+
+export const experimental_ppr = true;
 
 export default async function ProductPage({
   params,
 }: {
-  params: { sku: string };
+  params: Promise<{ sku: string }>;
 }) {
   const [productBasic] = await sql`
     SELECT id
@@ -19,12 +21,9 @@ export default async function ProductPage({
     notFound();
   }
 
-  const user = await getSignedInUser();
-  const customerSegments = user ? user.segment_ids : [];
-  const product = await getProductWithPersonalizedDescription(
-    productBasic.id,
-    customerSegments
-  );
+  // const user = await getSignedInUser();
+  // const customerSegments = user ? user.segment_ids : [];
+  const product = await getProduct(productBasic.id);
 
   if (!product) {
     notFound();
@@ -32,7 +31,15 @@ export default async function ProductPage({
 
   return (
     <div className="container mx-auto p-4">
+      {/** @ts-expect-error undecided on how to handle conditional personalized desc typing */}
       <ProductDetails product={product} />
     </div>
   );
+}
+export async function generateStaticParams() {
+  const rows = await sql`
+    SELECT sku
+    FROM products
+  `;
+  return rows.map((row) => ({ params: { sku: row.sku } }));
 }
