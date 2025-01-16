@@ -7,12 +7,15 @@ export default async function PersonalizedDescription({
   productId: number;
 }) {
   const user = await getSignedInUser();
+  if (!user) {
+    return null;
+  }
   const customerSegments = user ? user.segment_ids : [];
   const personalizedProduct = await getProductWithPersonalizedDescription(
     productId,
     customerSegments
   );
-  if (!personalizedProduct) {
+  if (!personalizedProduct || !personalizedProduct.personalizedDescription) {
     return null;
   }
   return (
