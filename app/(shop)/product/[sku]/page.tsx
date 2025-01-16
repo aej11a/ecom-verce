@@ -31,7 +31,6 @@ export default async function ProductPage({
 
   return (
     <div className="container mx-auto p-4">
-      {/** @ts-expect-error undecided on how to handle conditional personalized desc typing */}
       <ProductDetails product={product} />
     </div>
   );

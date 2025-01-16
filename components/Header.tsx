@@ -11,6 +11,7 @@ import {
 import { getCategories } from "@/app/actions/category";
 import { getSignedInUser } from "@/app/actions/auth";
 import { SignOutButton } from "./SignOutButton";
+import { CartCount } from './CartCount'
 
 export async function Header() {
   const categories = await getCategories();
@@ -51,9 +52,12 @@ export async function Header() {
                 className="w-64"
               />
             </form>
-            <Button variant="ghost" size="icon">
-              <ShoppingCart className="h-5 w-5" />
-            </Button>
+            <Link href="/cart">
+              <Button variant="ghost" size="icon">
+                <ShoppingCart className="h-5 w-5" />
+                <CartCount />
+              </Button>
+            </Link>
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
