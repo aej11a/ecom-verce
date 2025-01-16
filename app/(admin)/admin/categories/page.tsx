@@ -1,16 +1,16 @@
-import { neon } from "@neondatabase/serverless";
+import { sql } from "@/lib/db";
 import Link from "next/link";
 import { CategoryList } from "@/components/admin/CategoryList";
 import { Button } from "@/components/ui/button";
+import { Category } from "@/types";
 
 async function getCategories() {
-  const sql = neon(process.env.DATABASE_URL);
   const rows = await sql`
     SELECT id, name, slug, updated_at
     FROM categories
     ORDER BY name ASC
   `;
-  return rows;
+  return rows as Category[];
 }
 
 export default async function CategoriesPage() {

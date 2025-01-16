@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -8,16 +8,28 @@ import {
   createCustomerSegment,
   updateCustomerSegment,
 } from "@/app/actions/customer-segment";
-import type { CustomerSegment } from "@/types";
+import { generateSlug } from "@/lib/utils";
+
+type CustomerSegmentFormProps = {
+  segment?: {
+    id: number;
+    name: string;
+    slug: string;
+  };
+};
 
 export default function CustomerSegmentForm({
   segment,
-}: {
-  segment?: CustomerSegment;
-}) {
+}: CustomerSegmentFormProps) {
   const [name, setName] = useState(segment?.name || "");
   const [slug, setSlug] = useState(segment?.slug || "");
   const router = useRouter();
+
+  useEffect(() => {
+    if (!segment) {
+      setSlug(generateSlug(name));
+    }
+  }, [name, segment]);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();

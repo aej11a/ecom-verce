@@ -1,9 +1,9 @@
-import { neon } from "@neondatabase/serverless";
+import { sql } from "@/lib/db";
 import { notFound } from "next/navigation";
-import ProductForm, { Category, Product } from "@/components/admin/ProductForm";
+import ProductForm from "@/components/admin/ProductForm";
+import type { Category, CustomerSegment, Product } from "@/types";
 
 async function getProduct(id: string): Promise<Product> {
-  const sql = neon(process.env.DATABASE_URL);
   const rows = await sql`
     SELECT id, name, tagline, description, sku, price, image_url, category_id
     FROM products
@@ -13,13 +13,21 @@ async function getProduct(id: string): Promise<Product> {
 }
 
 async function getCategories(): Promise<Category[]> {
-  const sql = neon(process.env.DATABASE_URL);
   const rows = await sql`
-      SELECT id, name, slug
+      SELECT id, name
       FROM categories
       ORDER BY name ASC
     `;
   return rows as Category[];
+}
+
+async function getCustomerSegments() {
+  const rows = await sql`
+    SELECT id, name
+    FROM customer_segments
+    ORDER BY name ASC
+  `;
+  return rows as CustomerSegment[];
 }
 
 export default async function EditProductPage({
@@ -27,9 +35,10 @@ export default async function EditProductPage({
 }: {
   params: { id: string };
 }) {
-  const [product, categories] = await Promise.all([
-    getProduct(params.id),
+  const [product, categories, segments] = await Promise.all([
+    getProduct((await params).id),
     getCategories(),
+    getCustomerSegments(),
   ]);
 
   if (!product) {
@@ -40,8 +49,12 @@ export default async function EditProductPage({
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4 text-center">Edit Product</h1>
       <div className="max-w-2xl mx-auto bg-white p-8 rounded-lg shadow-md">
-        <ProductForm product={product} categories={categories} />
+        <ProductForm
+          product={product}
+          categories={categories}
+          segments={segments}
+        />
       </div>
     </div>
-  )
+  );
 }

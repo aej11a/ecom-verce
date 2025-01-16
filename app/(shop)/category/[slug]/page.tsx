@@ -28,7 +28,7 @@ export default async function CategoryPage({
   params: { slug: string };
   searchParams: FilterParams;
 }) {
-  const category = await getCategory(params.slug);
+  const category = await getCategory((await params).slug);
   
   if (!category) {
     notFound();
@@ -41,7 +41,7 @@ export default async function CategoryPage({
         <FilterSidebar />
         <div className="flex-1">
           <Suspense fallback={<div>Loading products...</div>}>
-            <ProductGrid categoryId={category.id} filters={searchParams} />
+            <ProductGrid categoryId={category.id} filters={(await searchParams)} />
           </Suspense>
         </div>
       </div>

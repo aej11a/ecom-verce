@@ -27,10 +27,10 @@ export default function CustomerForm({
   const [name, setName] = useState(customer?.name || "");
   const [email, setEmail] = useState(customer?.email || "");
   const [selectedSegments, setSelectedSegments] = useState<number[]>(
-    customer?.segment_ids || []
+    customer?.segment_ids.filter(Boolean) || []
   );
   const router = useRouter();
-
+  console.log(selectedSegments)
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     try {

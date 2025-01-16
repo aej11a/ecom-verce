@@ -1,10 +1,9 @@
-import { neon } from "@neondatabase/serverless";
+import { sql } from "@/lib/db";
 import { notFound } from "next/navigation";
 import CategoryForm from "@/components/admin/CategoryForm";
-import { Category } from "@/components/admin/ProductForm";
+import type { Category } from "@/types";
 
 async function getCategory(id: string): Promise<Category | null> {
-  const sql = neon(process.env.DATABASE_URL);
   const rows = await sql`
     SELECT id, name, slug
     FROM categories

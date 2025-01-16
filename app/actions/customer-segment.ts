@@ -1,6 +1,7 @@
 "use server";
 
 import { sql } from "@/lib/db";
+import { CustomerSegment } from "@/types";
 import { revalidatePath } from "next/cache";
 
 export async function createCustomerSegment(data: {
@@ -36,5 +37,5 @@ export async function getCustomerSegments() {
     FROM customer_segments
     ORDER BY name ASC
   `;
-  return rows;
+  return rows as CustomerSegment[];
 }

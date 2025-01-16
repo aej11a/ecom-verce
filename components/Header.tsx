@@ -9,9 +9,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { getCategories } from "@/app/actions/category";
+import { getSignedInUser } from "@/app/actions/auth";
+import { SignOutButton } from "./SignOutButton";
 
 export async function Header() {
   const categories = await getCategories();
+  const user = await getSignedInUser();
 
   return (
     <header className="bg-white shadow-md">
@@ -51,9 +54,29 @@ export async function Header() {
             <Button variant="ghost" size="icon">
               <ShoppingCart className="h-5 w-5" />
             </Button>
-            <Button variant="ghost" size="icon">
-              <User className="h-5 w-5" />
-            </Button>
+            {user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon">
+                    <User className="h-5 w-5" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem>
+                    <span className="block text-sm">{user.email}</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <SignOutButton />
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Link href="/signin">
+                <Button variant="ghost" size="sm">
+                  Sign In
+                </Button>
+              </Link>
+            )}
           </div>
         </div>
       </div>

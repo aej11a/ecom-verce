@@ -8,6 +8,7 @@ CREATE TABLE products (
   image_url TEXT,
   updated_at TIMESTAMP NOT NULL,
   updated_by VARCHAR(255) NOT NULL,
+  personalized_descriptions JSONB DEFAULT '{}',
   metadata JSONB
 );
 

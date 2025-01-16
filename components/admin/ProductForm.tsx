@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -20,8 +20,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { createProduct, updateProduct } from "@/app/actions/product";
-import { Loader2, Upload } from "lucide-react";
+import { createProduct, deletePersonalizedDescription, getPersonalizedDescriptions, regeneratePersonalizedDescription, updateProduct } from "@/app/actions/product";
+import { Loader2, RefreshCw, Trash2, Upload } from "lucide-react";
+import { generateSlug } from "@/lib/utils";
+import { PersonalizedDescriptionForm } from "./PersonalizedDescriptionForm";
+import { CustomerSegment } from "@/types";
 
 type Category = {
   id: number;
@@ -41,15 +44,47 @@ type ProductFormProps = {
     image_url: string;
   };
   categories: Category[];
+  segments: CustomerSegment[];
 };
 
-export default function ProductForm({ product, categories }: ProductFormProps) {
+type PersonalizedDescription = {
+  segmentIds: number[];
+  segmentNames: string;
+  description: string;
+};
+
+export default function ProductForm({
+  product,
+  categories,
+  segments,
+}: ProductFormProps) {
   const [image, setImage] = useState<File | null>(null);
   const [categoryId, setCategoryId] = useState<string>(
     product?.category_id?.toString() || ""
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [name, setName] = useState(product?.name || "");
+  const [sku, setSku] = useState(product?.sku || "");
+  const [personalizedDescriptions, setPersonalizedDescriptions] = useState<
+    PersonalizedDescription[]
+  >([]);
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+
+  useEffect(() => {
+    if (!product) {
+      setSku(generateSlug(name));
+    }
+  }, [name, product]);
+
+  useEffect(() => {
+    if (product) {
+      setIsLoading(true);
+      getPersonalizedDescriptions(product.id)
+        .then(setPersonalizedDescriptions)
+        .finally(() => setIsLoading(false));
+    }
+  }, [product]);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -80,6 +115,39 @@ export default function ProductForm({ product, categories }: ProductFormProps) {
     }
   };
 
+  const handleDeleteDescription = async (segmentIds: number[]) => {
+    if (!product) return;
+    try {
+      await deletePersonalizedDescription(product.id, segmentIds);
+      setPersonalizedDescriptions((prev) =>
+        prev.filter((d) => d.segmentIds.join("-") !== segmentIds.join("-"))
+      );
+    } catch (error) {
+      console.error("Error deleting personalized description:", error);
+      // Handle error (e.g., show error message to user)
+    }
+  };
+
+  const handleRegenerateDescription = async (segmentIds: number[]) => {
+    if (!product) return;
+    try {
+      const newDescription = await regeneratePersonalizedDescription(
+        product.id,
+        segmentIds
+      );
+      setPersonalizedDescriptions((prev) =>
+        prev.map((d) =>
+          d.segmentIds.join("-") === segmentIds.join("-")
+            ? { ...d, description: newDescription }
+            : d
+        )
+      );
+    } catch (error) {
+      console.error("Error regenerating personalized description:", error);
+      // Handle error (e.g., show error message to user)
+    }
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -94,12 +162,19 @@ export default function ProductForm({ product, categories }: ProductFormProps) {
                 id="name"
                 name="name"
                 defaultValue={product?.name}
+                onChange={(e) => setName(e.target.value)}
                 required
               />
             </div>
             <div className="space-y-2">
               <Label htmlFor="sku">SKU</Label>
-              <Input id="sku" name="sku" defaultValue={product?.sku} required />
+              <Input
+                id="sku"
+                name="sku"
+                value={sku}
+                onChange={(e) => setSku(e.target.value)}
+                required
+              />
             </div>
           </div>
 
@@ -160,7 +235,7 @@ export default function ProductForm({ product, categories }: ProductFormProps) {
             <div className="flex items-center space-x-4">
               {product?.image_url && (
                 <img
-                  src={product.image_url}
+                  src={product.image_url || "/placeholder.svg"}
                   alt={product.name}
                   className="w-16 h-16 object-cover rounded"
                 />
@@ -183,6 +258,71 @@ export default function ProductForm({ product, categories }: ProductFormProps) {
               )}
             </div>
           </div>
+          {product && (
+            <>
+              <PersonalizedDescriptionForm
+                productId={product.id}
+                segments={segments}
+              />
+
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">
+                  Personalized Descriptions
+                </h3>
+                {isLoading ? (
+                  <p>Loading personalized descriptions...</p>
+                ) : personalizedDescriptions.length > 0 ? (
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Segments
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Description
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Actions
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {personalizedDescriptions.map((desc) => (
+                        <tr key={desc.segmentIds.join("-")}>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            {desc.segmentNames}
+                          </td>
+                          <td className="px-6 py-4">{desc.description}</td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() =>
+                                handleDeleteDescription(desc.segmentIds)
+                              }
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() =>
+                                handleRegenerateDescription(desc.segmentIds)
+                              }
+                            >
+                              <RefreshCw className="w-4 h-4" />
+                            </Button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                ) : (
+                  <p>No personalized descriptions yet.</p>
+                )}
+              </div>
+            </>
+          )}
         </CardContent>
         <CardFooter>
           <Button type="submit" className="w-full" disabled={isSubmitting}>

@@ -1,16 +1,30 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { createCategory, updateCategory } from "@/app/actions/category";
-import type { CategoryFormProps } from "@/types";
+import { generateSlug } from "@/lib/utils";
+
+type CategoryFormProps = {
+  category?: {
+    id: number;
+    name: string;
+    slug: string;
+  };
+};
 
 export default function CategoryForm({ category }: CategoryFormProps) {
   const [name, setName] = useState(category?.name || "");
   const [slug, setSlug] = useState(category?.slug || "");
   const router = useRouter();
+
+  useEffect(() => {
+    if (!category) {
+      setSlug(generateSlug(name));
+    }
+  }, [name, category]);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();

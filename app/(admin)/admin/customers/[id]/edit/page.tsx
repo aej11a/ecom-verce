@@ -9,7 +9,7 @@ export default async function EditCustomerPage({
   params: { id: string };
 }) {
   const [customer, segments] = await Promise.all([
-    getCustomerById(parseInt(params.id)),
+    getCustomerById(parseInt((await params).id)),
     getCustomerSegments(),
   ]);
 

@@ -10,6 +10,7 @@ export type Product = {
   category_id: number | null;
   updated_at: string;
   updated_by: string;
+  personalizedDescription?: string;
 };
 
 export type ProductFormData = Omit<Product, "id" | "updated_at" | "updated_by">;
@@ -49,6 +50,7 @@ export type Customer = {
   email: string;
   created_at: string;
   updated_at: string;
+  segment_names: string[];
   segments: CustomerSegment[];
 };
 
@@ -88,21 +90,9 @@ export type ProductFormProps = {
   categories: Category[];
 };
 
-export type CategoryFormProps = {
-  category?: Category;
-};
-
-export type CustomerSegmentFormProps = {
-  segment?: CustomerSegment;
-};
-
 export type CustomerFormProps = {
   customer?: Customer;
   segments: CustomerSegment[];
-};
-
-export type CustomerListProps = {
-  customers: CustomerListItem[];
 };
 
 // Page params types
@@ -129,5 +119,17 @@ export type ProductFilterParams = {
 export type ActionResult<T> = {
   success: boolean;
   data?: T;
+  error?: string;
+};
+
+// User related types
+export type User = {
+  id: number;
+  email: string;
+  segment_ids: number[];
+};
+
+export type SignInResult = {
+  success: boolean;
   error?: string;
 };

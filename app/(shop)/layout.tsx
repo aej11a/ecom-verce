@@ -16,7 +16,7 @@ export default function ShopLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body style={{ ...inter.style }}>
         <div className="flex flex-col min-h-screen">
           <Header />
           <main className="flex-grow container mx-auto px-4 py-8">

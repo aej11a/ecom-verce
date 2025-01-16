@@ -1,6 +1,7 @@
 "use server";
 
 import { sql } from "@/lib/db";
+import { Customer } from "@/types";
 import { revalidatePath } from "next/cache";
 
 export async function createCustomer(data: {
@@ -20,10 +21,10 @@ export async function createCustomer(data: {
     const values = segment_ids
       .map((segment_id) => `(${customerId}, ${segment_id})`)
       .join(", ");
-    await sql`
-      INSERT INTO customer_segment_assignments (customer_id, segment_id)
-      VALUES ${values}
-    `; // NOTE: check if you need equivalent for sql.unsafe instead of just `values`
+    const query =
+      "INSERT INTO customer_segment_assignments (customer_id, segment_id) VALUES" +
+      values;
+    await sql(query); // TODO: add safety check
   }
 
   revalidatePath("/admin/customers");
@@ -35,6 +36,7 @@ export async function updateCustomer(
   data: { name: string; email: string; segment_ids: number[] }
 ) {
   const { name, email, segment_ids } = data;
+  console.log(segment_ids);
   await sql`
     UPDATE customers
     SET name = ${name}, email = ${email}, updated_at = NOW()
@@ -52,10 +54,10 @@ export async function updateCustomer(
     const values = segment_ids
       .map((segment_id) => `(${id}, ${segment_id})`)
       .join(", ");
-    await sql`
-      INSERT INTO customer_segment_assignments (customer_id, segment_id)
-      VALUES ${values}
-    `; // NOTE: check if you need equivalent for sql.unsafe instead of just `values`
+    const query =
+      "INSERT INTO customer_segment_assignments (customer_id, segment_id) VALUES" +
+      values; // TODO: add safety check
+    await sql(query);
   }
 
   revalidatePath("/admin/customers");
@@ -76,7 +78,7 @@ export async function getCustomers() {
     GROUP BY c.id, c.name, c.email, c.created_at
     ORDER BY c.name ASC
   `;
-  return rows;
+  return rows as Customer[];
 }
 
 export async function getCustomerById(id: number) {
@@ -92,5 +94,5 @@ export async function getCustomerById(id: number) {
     WHERE c.id = ${id}
     GROUP BY c.id, c.name, c.email
   `;
-  return rows[0];
+  return rows[0] as Customer;
 }

@@ -1,16 +1,5 @@
 import Image from "next/image";
-import { formatDate } from "@/lib/utils";
-
-type Product = {
-  id: number;
-  name: string;
-  tagline: string;
-  description: string;
-  sku: string;
-  price: number;
-  image_url: string;
-  updated_at: string;
-};
+import type { Product } from "@/types";
 
 export default function ProductDetails({ product }: { product: Product }) {
   return (
@@ -38,6 +27,12 @@ export default function ProductDetails({ product }: { product: Product }) {
           <h2 className="text-lg font-semibold mb-2">Description</h2>
           <p className="text-gray-700">{product.description}</p>
         </div>
+        {product.personalizedDescription && (
+          <div className="mb-4 bg-blue-50 p-4 rounded-lg">
+            <h2 className="text-lg font-semibold mb-2">Why you'll love it</h2>
+            <p className="text-gray-700">{product.personalizedDescription}</p>
+          </div>
+        )}
         <button className="bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors">
           Add to Cart
         </button>
