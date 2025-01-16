@@ -12,7 +12,7 @@ export default async function PersonalizedDescription({
     productId,
     customerSegments
   );
-  if (!personalizedProduct) {
+  if (!personalizedProduct || !personalizedProduct.personalizedDescription) {
     return null;
   }
   return (
