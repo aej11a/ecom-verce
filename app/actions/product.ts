@@ -5,6 +5,7 @@ import { put } from "@vercel/blob";
 import { revalidatePath } from "next/cache";
 import { generateText } from "ai";
 import { openai } from "@ai-sdk/openai";
+import { Product } from "@/types";
 
 export async function createProduct(formData: FormData) {
   const name = formData.get("name") as string;
@@ -188,7 +189,16 @@ export async function getProduct(id: number) {
     WHERE id = ${id}
   `;
 
-  return product;
+  return product as Product;
+}
+
+export async function getProductsByIds(ids: number[]) {
+  const rows = await sql`
+    SELECT id, name, price, image_url, sku
+    FROM products
+    WHERE id = ANY(${ids})
+  `;
+  return rows as Product[];
 }
 
 export async function getProductWithPersonalizedDescription(
