@@ -24,8 +24,8 @@ export async function createProduct(formData: FormData) {
   }
 
   const rows = await sql`
-    INSERT INTO products (name, slug, tagline, description, sku, price, image_url, category_id, updated_at, updated_by)
-    VALUES (${name}, ${slug}, ${tagline}, ${description}, ${sku}, ${price}, ${imageUrl}, ${categoryId}, NOW(), 'system')
+    INSERT INTO products (name, tagline, description, sku, price, image_url, category_id, updated_at, updated_by)
+    VALUES (${name}, ${tagline}, ${description}, ${sku}, ${price}, ${imageUrl}, ${categoryId}, NOW(), 'system')
     RETURNING id
   `;
 
