@@ -9,7 +9,6 @@ import { Product } from "@/types";
 
 export async function createProduct(formData: FormData) {
   const name = formData.get("name") as string;
-  const slug = formData.get("slug") as string;
   const tagline = formData.get("tagline") as string;
   const description = formData.get("description") as string;
   const sku = formData.get("sku") as string;
